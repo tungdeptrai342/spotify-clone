@@ -1,0 +1,12 @@
+.ant-dropdown-menu {
+    background-color: rgb(40, 40, 40) !important;
+}
+
+.ant-dropdown-menu-title-content {
+    color: white !important;
+}
+
+.ant-dropdown-menu-item:hover {
+    background-color: rgba(236, 226, 226, 0.5) !important;
+    text-decoration: none !important
+}

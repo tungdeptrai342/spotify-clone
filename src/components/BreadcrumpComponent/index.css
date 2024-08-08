@@ -1,0 +1,35 @@
+.breadcrumb-active {
+  color: black; /* Thay đổi màu chữ nếu cần */
+  padding: 8px 14px 8px 14px;
+  border-radius: 9999px; /* Tùy chỉnh border-radius nếu cần */
+  font-weight: 800;
+  background-color: white;
+}
+
+.breadcrumb-active .link-to {
+  color: black; /* Màu chữ cho liên kết bên trong */
+}
+
+.breadcrumb-active .link-to:hover {
+  background-color: transparent;
+}
+.breadcrumb-item {
+  padding: 8px 14px 8px 14px;
+  border-radius: 9999px;
+  color: white;
+  background-color: #353535;
+  font-weight: 800;
+}
+
+.breadcrumb-item .link-to {
+  color: white; /* Màu chữ cho liên kết bên trong */
+}
+
+.breadcrumb-item .link-to:hover{
+  color: white;
+  background-color: transparent;
+}
+
+.breadcrumb-item:hover {
+  background-color: rgb(48, 46, 46);
+}

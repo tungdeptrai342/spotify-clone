@@ -1,0 +1,34 @@
+.main{
+    margin-top: 50px;
+    margin-left: 10px;
+    max-height: 700px ; /* Chiều cao tối đa của container */
+    overflow-y: auto;  /* Cho phép cuộn dọc */  
+}
+.card-playlist-container{
+    display: flex;
+    margin-top: 10px;
+}
+.meta-title {
+    white-space: nowrap !important;       /* Ngăn không cho văn bản xuống dòng */
+    overflow: hidden !important;          /* Ẩn phần văn bản vượt ra ngoài vùng chứa */
+    text-overflow: ellipsis !important;   /* Hiển thị dấu "..." khi văn bản bị cắt bớt */
+    max-width: 100%;           /* Đảm bảo tiêu đề không vượt quá chiều rộng của thẻ */
+  }
+  .main::-webkit-scrollbar {
+    background-color: transparent; /* Ẩn nền của thanh cuộn */
+    width: 8; /* Ẩn thanh cuộn dọc */
+}
+
+.main::-webkit-scrollbar-thumb {
+    background-color: rgba(236, 226, 226, 0.5); /* Màu nền của thanh trượt */
+    border-radius: 4px; /* Bo tròn các góc của thanh trượt */
+}
+
+.main::-webkit-scrollbar-track {
+    background-color: transparent; /* Ẩn nền của vùng thanh cuộn */
+    width: 8; /* Ẩn thanh cuộn dọc */
+
+}
+.ant-menu-item:active{
+    background-color: transparent !important;
+}

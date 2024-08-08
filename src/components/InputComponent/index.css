@@ -1,0 +1,16 @@
+.input-component{
+    width: 324px;
+    height: 48px;
+    color: white;
+    background-color: transparent !important;
+
+}
+.input-component:focus{
+    border: 2px solid white !important;
+}
+/* styles.css */
+.input-component::placeholder {
+    color: white !important;
+    opacity: 1 !important; /* Override default opacity */
+  }
+  

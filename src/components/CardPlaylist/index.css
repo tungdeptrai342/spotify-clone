@@ -1,0 +1,32 @@
+.cover-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .cover-image {
+    display: block;
+    padding: 10px;
+    height: 250px;
+    width: 250px;
+    object-fit: cover;
+  }
+  
+  .cover-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-size: 25px;
+  }
+  .card-playlist:hover {
+    /* Override default hover styles if needed */
+    background-color: transparent ; /* Example: remove background color on hover */
+    box-shadow: none ; /* Example: remove box shadow on hover */
+  }
+  
+  

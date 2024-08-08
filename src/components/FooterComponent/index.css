@@ -1,0 +1,79 @@
+li {
+    color: rgb(180, 179, 176)
+}
+
+ul li {
+    text-decoration: none;
+    list-style-type: none;
+    font-size: 18px;
+    margin-top: 9px;
+}
+
+.footer-container {
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.col-8 {
+    flex-basis: 25%;
+}
+
+.col-2 {
+    flex-basis: 25%;
+}
+
+.col-3 {
+    flex-basis: 25%;
+}
+
+.col-4 {
+    flex-basis: 25%;
+}
+
+.iconHover:hover {
+    background-color: rgb(124, 116, 116) !important;
+}
+
+ul li:hover {
+    text-decoration: underline;
+    /* Add underline on hover */
+    color: white;
+    /* Keep text color white on hover */
+    cursor: pointer;
+}
+
+.footer-more-container {
+    display: flex;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+p {
+    color: rgb(180, 179, 176)
+}
+
+.footer-more-col-2 span {
+    color: rgb(180, 179, 176)
+}
+
+.footer-more-col-1 {
+    flex-basis: 90%;
+    display: flex;
+}
+
+.footer-more-col-1 p {
+    margin-right: 15px;
+}
+
+.footer-more-col-2 {
+    flex-basis: 10%;
+}
+
+
+p:hover{
+    /* Add underline on hover */
+    color: white;
+    /* Keep text color white on hover */
+    cursor: pointer;
+}

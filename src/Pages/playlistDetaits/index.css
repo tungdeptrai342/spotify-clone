@@ -1,0 +1,34 @@
+.playlist-details {
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.title-playlist-container {
+    display: flex;
+}
+
+.title-playlist-stt {
+    padding: 15px;
+}
+
+.title-playlist-songs {
+    display: flex;
+    padding: 15px;
+    flex-basis: 40%;
+}
+
+.title-playlist-album {
+    padding: 15px;
+    flex-basis: 30%;
+}
+
+.title-playlist-date {
+    padding: 15px;
+    flex-basis: 25%;
+}
+
+.title-playlist-duration {
+    flex-basis: 5%;
+    
+    padding: 15px;
+}

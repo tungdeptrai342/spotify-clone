@@ -1,0 +1,35 @@
+.card-xl {
+  display: flex;
+  align-items: center;
+  background-color: rgb(16, 16, 16);
+}
+
+.card-xl:hover {
+  background-color: rgb(16, 16, 16) !important;
+}
+
+.card-xl .ant-card-cover {
+  flex-shrink: 0;
+  /* Ensure the cover does not shrink */
+}
+
+.card-xl .ant-card-meta-title {
+  margin-bottom: 0px !important;
+}
+
+.card-xl .ant-card-cover>* {
+  border-radius: 4px 4px 4px 4px;
+}
+
+.card-xl .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  padding: 0px;
+}
+
+.card-xl .ant-card-meta {
+  margin-left: 16px;
+  /* Add some space between the cover and the meta */
+}

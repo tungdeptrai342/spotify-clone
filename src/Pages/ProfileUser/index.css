@@ -1,0 +1,54 @@
+.head-content {
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.top-item-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.top-item-songs {
+    display: flex;
+    align-items: center;
+    width: auto;
+    flex-basis: 50%;
+}
+
+
+.top-item-album {
+    flex-basis: 40%;
+}
+
+.top-item {
+    margin-left: 20px;
+}
+
+.top-item-songs:hover {
+    background-color: rgb(16, 16, 16);
+}
+
+.profile-user-container {
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.playlist-header-user:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.header-content-user:hover {
+    text-decoration: underline;
+}
+
+.top-item-duration{
+    display: flex;
+}
+.icon-duration{
+    visibility: hidden; /* Initially hide the icons but keep the space occupied */
+}
+
+.top-item-songs:hover .icon-duration {
+    visibility: visible;
+}

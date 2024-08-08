@@ -1,0 +1,17 @@
+/* Ensure this class name matches the one used in your component */
+.sidebar-wrapper .ant-menu-item {
+    transition: none; /* Remove any transition effects */
+  }
+  
+  .sidebar-wrapper .ant-menu-item-selected {
+    background: none !important; /* Remove background color */
+  }
+  
+  .sidebar-wrapper .ant-menu-item:hover {
+    background: none !important; /* Remove background color on hover */
+  }
+  
+  .sidebar-wrapper .ant-menu-item-active {
+    background: none !important; /* Remove background color when active */
+  }
+  

@@ -1,0 +1,27 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+}
+
+.login-content {
+    margin-top: 40px;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(0deg, rgba(32, 32, 32, 0.95) 0%, rgba(0, 0, 0, 1) 38%, rgba(5, 5, 5, 0.869) 100%);
+    border-radius: 1%;
+    width: 734px;
+}
+.login-header-content{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.login-button{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.custom-divider {
+    border-top: 0.5px solid #292929 !important;
+    background-color: #292929 !important;
+  }
+  

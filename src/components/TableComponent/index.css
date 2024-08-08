@@ -1,0 +1,42 @@
+.custom-table .ant-table-tbody>tr>td {
+  border-bottom: none;
+  border-right: none !important;
+  /* Ẩn các đường kẻ giữa các hàng */
+  background-color: transparent;
+}
+
+.custom-table .ant-table.thead{
+  background-color: transparent !important;
+}
+ .ant-table-thead>tr>td {
+  background-color: transparent !important;
+}
+.ant-table-wrapper .ant-table-thead >tr>th{
+  background-color: transparent !important;
+}
+.ant-table-thead >tr>th{
+  border-right: none !important;
+  border-top: none !important;
+  
+}
+
+.action-icons {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.custom-table .ant-table-tbody>tr:hover .action-icons {
+  opacity: 1;
+}
+
+.icon-plus {
+  color: green;
+  cursor: pointer;
+}
+
+.icon-dash {
+  color: red;
+  cursor: pointer;
+}

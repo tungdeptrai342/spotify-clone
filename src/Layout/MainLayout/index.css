@@ -1,0 +1,213 @@
+.main-layout {
+    display: flex;
+    background-color: black;
+    max-width: 100%;
+}
+
+.slide-bar-head {
+    width: auto;
+    height: auto;
+    background-color: rgb(18, 18, 18);
+}
+
+.slide-bar-container {
+    flex-basis: 23%;
+    padding: 7px;
+    
+}
+
+.slide-bar-content {
+    padding: 7px 7px 7px 0px;
+    flex-basis: 77%;
+    
+}
+
+.row-content {
+    background-color: rgb(16, 16, 16);
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+
+}
+
+
+.ant-menu {
+    border-radius: 2%;
+}
+
+.ant-menu-item {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.icon-action-header {
+    color: white;
+    cursor: pointer;
+}
+
+.button-sign-up {
+    background-color: none !important;
+    color: #B3B3B3;
+    font-weight: 700;
+    background-color: transparent;
+    border: none;
+    padding: 7px 24px;
+
+}
+
+.button-sign-up:hover {
+    font-weight: 900px;
+    color: #B3B3B3 !important;
+    transform: scale(1.1);
+    background-color: transparent !important;
+}
+
+.button-login:hover {
+    font-weight: 900px;
+    color: black !important;
+    transform: scale(1.1);
+    border: none;
+}
+
+.button-login {
+    color: black;
+    padding: 7px 24px;
+    font-weight: 700;
+    border-radius: var(--encore-button-corner-radius, 9999px)
+}
+
+.col-1 {
+    padding: 9px;
+}
+
+.library {
+    background-color: rgb(18, 18, 18);
+
+}
+
+.library-container {
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: auto;
+    margin-top: 10px;
+}
+
+.header-library-title {
+    flex: 9;
+    color: #B3B3B3 !important;
+    padding: 15px;
+    display: flex;
+    font-weight: 700;
+    align-items: center;
+}
+
+.header-library-title:hover {
+    color: white !important;
+    cursor: pointer;
+}
+
+.header-library-plus {
+    flex: 1;
+    padding: 15px;
+}
+
+.plus-icon:hover {
+    background-color: #1F1F1F;
+    border-radius: 50%;
+}
+
+.card-libary {
+    margin-top: 21px;
+    margin-left: 8px;
+    margin-right: 8px;
+    max-height: 500px ; /* Chiều cao tối đa của container */
+    overflow-y: auto;  /* Cho phép cuộn dọc */  
+
+}
+.card-libary::-webkit-scrollbar {
+    background-color: transparent; /* Ẩn nền của thanh cuộn */
+    width: 0; /* Ẩn thanh cuộn dọc */
+}
+
+.card-libary::-webkit-scrollbar-thumb {
+    background-color: rgba(236, 226, 226, 0.5); /* Màu nền của thanh trượt */
+    border-radius: 4px; /* Bo tròn các góc của thanh trượt */
+}
+
+.card-libary::-webkit-scrollbar-track {
+    background-color: transparent; /* Ẩn nền của vùng thanh cuộn */
+}
+
+.card-libary:hover::-webkit-scrollbar {
+    width: 8px; /* Hiển thị thanh cuộn khi hover */
+}
+.card {
+    background-color: #1F1F1F;
+    margin-top: 17px;
+}
+
+.button-card {
+    border-radius: var(--encore-button-corner-radius, 9999px);
+    padding: 4px 12px;
+
+}
+
+.button-card:hover {
+    font-weight: 900px;
+    color: black !important;
+    font-size: 16px;
+    border: none;
+}
+
+.footer-libary {
+    padding: 7px;
+    margin-top: 12%;
+}
+
+.footer-libary a {
+    font-size: 0.6875rem;
+    color: #B3B3B3;
+}
+
+.card-playlist {
+    background-color: transparent;
+    border: none;
+    color: white;
+
+}
+
+.ant-card-meta-title {
+    color: white !important;
+    font-weight: 800;
+}
+
+.ant-card-meta-description {
+    color: #B3B3B3 !important;
+}
+.card-playlist .ant-card-body{
+    padding: 8px !important;
+}
+ .ant-card:hover{
+    background-color: rgb(128, 123, 123) !important;
+    cursor: pointer;
+}
+
+.ant-form-item{
+    height: 40px !important;
+    margin-bottom: 0px !important;
+}
+.ant-input{
+    border: 1px solid white !important;
+    outline: none !important;
+}
+.button-login {
+  display: inline-block; /* Ensure buttons are displayed */
+}
+
+.avatar-user{
+    background-color: rgb(49, 48, 48);
+    height: 24px;
+    width: 24px;
+    padding: 5px;
+    border-radius: 50%;
+}

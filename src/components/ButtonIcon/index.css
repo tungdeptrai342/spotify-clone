@@ -1,0 +1,31 @@
+.button-icon-component{
+    width: 324px;
+    height: 48px;
+    border: 1px solid var(--essential-subdued, #878787);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    background-color: transparent;
+    border-radius: var(--encore-button-corner-radius, 9999px);
+}
+.button-icon-component:hover{
+    background-color: transparent !important;
+    color: white !important;
+    border: 1px solid var(--essential-base, white) !important;    
+}
+.button-icon-component {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align content to the left */
+  }
+  
+  .button-icon {
+    margin-right: 5px; /* Space between icon and text */
+    display: flex;
+    align-items: center;
+  }
+  
+  .button-text {
+    flex: 1;
+  }
+  

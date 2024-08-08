@@ -1,0 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Ẩn mọi nội dung vượt quá chiều cao cửa sổ */
+    font-family: "Gill Sans", sans-serif;  }
+/* Ẩn thanh cuộn theo mặc định */
+::-webkit-scrollbar {
+    height: 0; /* Ẩn thanh cuộn ngang */
+    width: 8px;
+}
+
