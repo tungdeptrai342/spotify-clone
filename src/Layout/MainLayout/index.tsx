@@ -47,6 +47,7 @@ import {
 import UserAvatarDropdown from "../../components/UserDataComponent";
 import NavigationButtons from "../../components/navigationComponent";
 import { useApiContext } from "../../Contex";
+import SearchInput from "../../components/SearchComponent";
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const token = getAccessToken(); // Get token from local storage
@@ -367,17 +368,7 @@ const MainLayout: React.FC = () => {
                 <div>
                   <Col span={4}>
                     {inputPaths.includes(location.pathname) && (
-                      <InputComponent
-                        name="a"
-                        form={form}
-                        style={{
-                          marginLeft: "10px",
-                          backgroundColor: "#242424",
-                          border: "0",
-                          borderRadius: "500px",
-                          color: "white",
-                        }}
-                      ></InputComponent>
+                      <SearchInput></SearchInput>
                     )}
                   </Col>
                 </div>

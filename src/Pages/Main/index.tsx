@@ -103,6 +103,7 @@ const Main: React.FC = () => {
   const isInLibrary = (playlistId: string) => {
     return userPlaylist?.items.some((playlist) => playlist.id === playlistId);
   };
+
   return (
     <div className="main">
       <Link to={""} style={{ color: "white", textDecoration: "none" }}>
@@ -166,7 +167,7 @@ const Main: React.FC = () => {
               ) : null
             }
           >
-            <Meta
+            <Meta   
               style={{ width: "218px" }}
               title={<span className="meta-title">{show.name}</span>}
               description={show.publisher}
