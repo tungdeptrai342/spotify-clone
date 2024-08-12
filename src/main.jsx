@@ -15,8 +15,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <SearchProvider>
       <QueryClientProvider client={queryClient}>
         <App />
-        <SearchInput />
-        <SearchPage />
       </QueryClientProvider>
       </SearchProvider>
     </ApiProvider>
