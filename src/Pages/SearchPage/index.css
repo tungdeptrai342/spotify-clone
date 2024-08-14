@@ -8,7 +8,6 @@
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
-    max-height: 800px; /* Adjust this height as needed */
-    overflow-y: auto;  /* Enable vertical scrolling */
   }
-  
+  .header-search{
+  }

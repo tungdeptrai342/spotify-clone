@@ -26,7 +26,6 @@ const PlaylistDetails = () => {
     }
   );
 
-
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString("vi-VN", {
@@ -54,7 +53,13 @@ const PlaylistDetails = () => {
                     boxShadow: "0 6px 12px rgba(0, 0, 0, 0.7)",
                   }}
                 />
-              ) : null
+              ) : (
+                <img
+                  src={
+                    "https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"
+                  }
+                />
+              )
             }
             title={<p style={{ color: "white" }}>Playlist</p>}
             description={
@@ -235,7 +240,6 @@ const PlaylistDetails = () => {
                     textOverflow: "ellipsis",
                   }}
                   onClick={() => navigate(`/album/${track.track.album.id}`)}
-
                 >
                   {track.track.album.name}
                 </p>{" "}

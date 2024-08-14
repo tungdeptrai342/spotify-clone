@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import FooterComponent from "../../components/FooterComponent";
 import "./index.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import {
   ArtistsDetails,
+  checkIfFollowing,
+  deleteArtist,
   getArtistDetails,
+  putArtist,
 } from "../../services/playlistDetails";
 import CardXL from "../../components/CardXL";
 import {
@@ -18,7 +21,7 @@ import {
 } from "../../services/getTopArtist";
 import { PlusCircleOutlined, SmallDashOutlined } from "@ant-design/icons";
 import { formatDuration } from "../ProfileUser";
-import { Breadcrumb, Card } from "antd";
+import { Breadcrumb, Button, Card, notification } from "antd";
 import Meta from "antd/es/card/Meta";
 
 const ArtistsDetail = () => {
@@ -39,7 +42,13 @@ const ArtistsDetail = () => {
       },
     }
   );
-
+  const { data: isFollowing, refetch } = useQuery<boolean, Error>(
+    ["isFollowing", id],
+    () => checkIfFollowing(id),
+    {
+      enabled: !!id,
+    }
+  );
   const { data: artistTopItems } = useQuery<ArtistTopItem, Error>(
     ["AlbumArtist", artistId],
     () => getTopArtist(artistId!),
@@ -47,6 +56,42 @@ const ArtistsDetail = () => {
       enabled: !!artistId,
     }
   );
+
+  const followArtistMutation = useMutation((id: string) => putArtist(id), {
+    onSuccess: () => {
+      notification.success({
+        message: "Success",
+        description: "Đã fl nghệ sĩ",
+      });
+      refetch()
+    },
+    onError: () => {
+      notification.error({
+        message: "Error",
+        description: ` Có lỗi xảy ra khi fl nghệ sĩ`,
+      });
+      refetch()
+    },
+  });
+
+  const unfollowArtistMutation = useMutation((id: string) => deleteArtist(id), {
+    onSuccess: () => {
+      notification.success({
+        message: "Success",
+        description: "Đã unfl nghệ sĩ",
+      });
+      refetch()
+
+    },
+    onError: (error) => {
+      notification.error({
+        message: "Error",
+        description: `Có lỗi xảy ra khi unfl nghệ sĩ`,
+      });
+      refetch()
+
+    },
+  });
 
   const { data: albums } = useQuery<ResponseArtistAlbums>(
     ["albums", artistId, albumType],
@@ -136,6 +181,20 @@ const ArtistsDetail = () => {
               </div>
             }
           />
+        </div>
+        <div>
+          <Button
+            style={{color:"white", backgroundColor:"transparent", borderRadius: "9999px", marginTop: "20px"}}
+            onClick={() => {
+              if (isFollowing) {
+                unfollowArtistMutation.mutate(id!);
+              } else {
+                followArtistMutation.mutate(id!);
+              }
+            }}
+          >
+            {isFollowing ? "Hủy theo dõi" : "Theo dõi"}
+          </Button>{" "}
         </div>
         <h1 style={{ color: "white", padding: "15px", marginTop: "20px" }}>
           Phổ biến

@@ -10,13 +10,16 @@ import PodcastPage from "../Pages/PodcastsPage";
 import MusicPage from "../Pages/MusicPage";
 import Login from "../Pages/Login";
 import Example from "../Pages/Example";
-import SearchPage from "../Pages/SearchPage"
+import SearchPage from "../Pages/SearchPage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProfileUser from "../Pages/ProfileUser";
 // import PlaylistDetails from "../Pages/playlistDetaits";
 import AlbumDetail from "../Pages/AlbumDetailsPage";
 import ArtistsDetails from "../Pages/ArtistDetails";
 import PlaylistDetails from "../Pages/playlistDetaits";
+import ArtistsSearch from "../Pages/ArtistsSearch";
+import AlbumSearch from "../Pages/Albumsearch";
+import PlaylistSearch from "../Pages/PlaylistSearch";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -28,38 +31,49 @@ const RouterComponent = () => {
           element: <Main />,
         },
         {
-          path:"/music",
-          element: <MusicPage />
+          path: "/music",
+          element: <MusicPage />,
         },
         {
-          path:"/podcasts",
-          element: <PodcastPage/>
+          path: "/podcasts",
+          element: <PodcastPage />,
         },
         {
-          path:"/audio",
-          element: <AudioPage />
+          path: "/audio",
+          element: <AudioPage />,
         },
         {
-          path:"/search",
-          element: <SearchPage />
+          path: "/search",
+          element: <SearchPage />,
         },
         {
-          path:"/profile",
-          element: <ProfileUser />
+          path: "/profile",
+          element: <ProfileUser />,
         },
         {
-          path:"/playlist/:playlistId",
-          element: < PlaylistDetails/>
+          path: "/playlist/:playlistId",
+          element: <PlaylistDetails />,
         },
         {
-          path:"/album/:id",
-          element: <AlbumDetail/>
+          path: "/album/:id",
+          element: <AlbumDetail />,
         },
         {
-          path:"/artists/:id",
-          element: <ArtistsDetails />
+          path: "/artists/:id",
+          element: <ArtistsDetails />,
+        },
+        {
+          path: "/artists/search",
+          element: <ArtistsSearch />,
+        },
+        {
+          path: "/album/search",
+          element: <AlbumSearch />,
+        },
+        {
+          path:"/playlist/search",
+          element: <PlaylistSearch />
         }
-        
       ],
     },
     {
@@ -72,24 +86,23 @@ const RouterComponent = () => {
       ],
     },
     {
-        element: <NotFoundLayout />,
-        children: [
-          {
-            path: "*",
-            element: <NotFound />,
-          },
-        ],
-      },
-      {
-        element: <LoginLayout />,
-        children: [
-          {
-            path: "/Login",
-            element: <Login />,
-          },
-        ],
-      },
-
+      element: <NotFoundLayout />,
+      children: [
+        {
+          path: "*",
+          element: <NotFound />,
+        },
+      ],
+    },
+    {
+      element: <LoginLayout />,
+      children: [
+        {
+          path: "/Login",
+          element: <Login />,
+        },
+      ],
+    },
   ]);
   return <RouterProvider router={router} />;
 };

@@ -7,9 +7,11 @@ import { deletePlaylist, putPlaylist } from '../../services/playlistDetails';
 interface DropdownMenuProps {
   playlistId: string;
   isInLibrary: boolean | undefined;
+  refetch: () => void;
+
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({ playlistId, isInLibrary }) => {
+const DropdownMenu: React.FC<DropdownMenuProps> = ({ playlistId, isInLibrary, refetch }) => {
   const addMutation = useMutation({
     mutationFn: putPlaylist,
     onSuccess: () => {
@@ -17,12 +19,15 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ playlistId, isInLibrary }) 
         message: 'Success',
         description: 'Added to library successfully',
       });
+      refetch()
     },
+
     onError: (error) => {
       notification.error({
         message: 'Error',
         description: `Error adding playlist to library`,
       });
+      refetch()
     },
   });
 
@@ -33,12 +38,15 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ playlistId, isInLibrary }) 
         message: 'Success',
         description: 'Removed from library successfully',
       });
+      refetch()
+
     },
     onError: (error) => {
       notification.error({
         message: 'Error',
         description: `Error removing playlist from library`,
       });
+      refetch()
     },
   });
 

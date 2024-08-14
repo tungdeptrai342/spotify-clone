@@ -252,7 +252,11 @@ const ProfileUser = () => {
               cover={
                 playlist.images && playlist.images.length > 0 ? (
                   <img src={playlist.images[0].url} alt={playlist.name} />
-                ) : null
+                ) : (
+                  <img
+                    src={"https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"}
+                  />
+                )
               }
             >
               <Meta

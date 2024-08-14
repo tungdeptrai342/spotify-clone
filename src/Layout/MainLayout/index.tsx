@@ -13,6 +13,7 @@ import {
   MenuProps,
   Dropdown,
   Menu,
+  notification,
 } from "antd";
 import CardComponent from "../../components/Card";
 import "./index.css";
@@ -27,7 +28,7 @@ import {
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import InputComponent from "../../components/InputComponent";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import {
   ApiDataType,
   getUser,
@@ -48,6 +49,8 @@ import UserAvatarDropdown from "../../components/UserDataComponent";
 import NavigationButtons from "../../components/navigationComponent";
 import { useApiContext } from "../../Contex";
 import SearchInput from "../../components/SearchComponent";
+import DropdownMenu from "../../components/DropdownComponent";
+import { postPlaylist } from "../../services/playlist";
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const token = getAccessToken(); // Get token from local storage
@@ -72,9 +75,11 @@ const MainLayout: React.FC = () => {
 
   const { savedAlbumsData, setSavedAlbumsData, userPlaylist, setUserPlaylist } =
     useApiContext();
+
   interface FormFields {
     search: string;
   }
+
   const breadcrumbItems = [
     {
       title: "All",
@@ -100,7 +105,7 @@ const MainLayout: React.FC = () => {
 
   const userId = "31kgeh75edzsu6zoftj3lwpiq4ye"; // Set cứng user_id
 
-  useQuery<PlaylistsResponse, Error>(
+  const { refetch } = useQuery<PlaylistsResponse, Error>(
     ["playlists", userId],
     () => getUserPlaylists(userId),
     {
@@ -109,11 +114,37 @@ const MainLayout: React.FC = () => {
     }
   );
 
+  const isInLibrary = (playlistId: string) => {
+    return userPlaylist?.items.some((playlist) => playlist.id === playlistId);
+  };
+
   useQuery<SavedAlbumsResponse, Error>(["savedAlbums"], getUserSavedAlbums, {
     enabled: !!getAccessToken() && !savedAlbumsData,
     onSuccess: (data) => setSavedAlbumsData(data),
   });
 
+  const addMutation = useMutation({
+    mutationFn: postPlaylist,
+    onSuccess: () => {
+      notification.success({
+        message: 'Success',
+        description: 'Created playlist successfully',
+      });
+      refetch()
+    },
+    onError: () => {
+      notification.error({
+        message: 'Error',
+        description: `Error Created playlist `,
+      });
+      refetch()
+    },
+  });
+
+  const handleClick = () =>{
+    addMutation.mutate(userId)
+  }
+  
   const items = [
     ...(token
       ? []
@@ -179,7 +210,7 @@ const MainLayout: React.FC = () => {
                 <PopoverComponent
                   content={() => (
                     <>
-                      <p>Create playlist or folder</p>
+                      <p>Create playlist</p>
                     </>
                   )}
                 >
@@ -190,6 +221,7 @@ const MainLayout: React.FC = () => {
                       padding: "10px",
                     }}
                     className="plus-icon"
+                    onClick={handleClick}
                   />
                 </PopoverComponent>
               </div>
@@ -256,27 +288,44 @@ const MainLayout: React.FC = () => {
               ) : (
                 <>
                   {userPlaylist?.items.map((playlist) => (
-                    <Card
-                      className="card-playlist"
+                    <Dropdown
                       key={playlist.id}
-                      onClick={() => navigate(`/playlist/${playlist.id}`)}
+                      overlay={
+                        <DropdownMenu
+                          playlistId={playlist.id}
+                          isInLibrary={isInLibrary(playlist.id)}
+                          refetch={refetch}
+                        />
+                      }
+                      trigger={["contextMenu"]}
                     >
-                      <Meta
-                        className="meta-playlist"
-                        style={{ color: "white" }}
-                        title={playlist.name}
-                        description={`Total Tracks: ${playlist.tracks.total}`}
-                        avatar={
-                          playlist.images && playlist.images.length > 0 ? (
-                            <img
-                              style={{ width: "48px", height: "48px" }}
-                              src={playlist.images[0].url}
-                              alt={playlist.name}
-                            />
-                          ) : null
-                        }
-                      />
-                    </Card>
+                      <Card
+                        className="card-playlist"
+                        key={playlist.id}
+                        onClick={() => navigate(`/playlist/${playlist.id}`)}
+                      >
+                        <Meta
+                          className="meta-playlist"
+                          style={{ color: "white" }}
+                          title={playlist.name}
+                          description={`Total Tracks: ${playlist.tracks.total}`}
+                          avatar={
+                            playlist.images && playlist.images.length > 0 ? (
+                              <img
+                                style={{ width: "48px", height: "48px" }}
+                                src={playlist.images[0].url}
+                                alt={playlist.name}
+                              />
+                            ) : (
+                              <img
+                                style={{ width: "48px", height: "48px" }}
+                                src={"https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"}
+                              />
+                            )
+                          }
+                        />
+                      </Card>
+                    </Dropdown>
                   ))}
                   {savedAlbumsData?.items.map(({ album }) => (
                     <Card

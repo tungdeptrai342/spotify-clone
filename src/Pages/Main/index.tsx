@@ -18,7 +18,7 @@ import {
 } from "../../services/getUsers";
 import { useMutation, useQuery } from "react-query";
 import "./index.css";
-import { Card, Dropdown,} from "antd";
+import { Card, Dropdown } from "antd";
 import Meta from "antd/es/card/Meta";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import FooterComponent from "../../components/FooterComponent";
@@ -27,7 +27,9 @@ import DropdownMenu from "../../components/DropdownComponent";
 
 const Main: React.FC = () => {
   const userId = "31kgeh75edzsu6zoftj3lwpiq4ye";
-  const [currentPlaylistId, setCurrentPlaylistId] = useState<string | null>(null);
+  const [currentPlaylistId, setCurrentPlaylistId] = useState<string | null>(
+    null
+  );
 
   const navigate = useNavigate();
   const {
@@ -47,7 +49,7 @@ const Main: React.FC = () => {
     setAudiobooks,
   } = useApiContext();
 
-  useQuery<PlaylistsResponse, Error>(
+  const { refetch } = useQuery<PlaylistsResponse, Error>(
     ["playlists", userId],
     () => getUserPlaylists(userId),
     {
@@ -111,34 +113,44 @@ const Main: React.FC = () => {
       </Link>
       <div className="card-playlist-container">
         {userPlaylist?.items.slice(0, 6).map((playlist) => (
-            <Dropdown
+          <Dropdown
             key={playlist.id}
-            overlay={<DropdownMenu playlistId={playlist.id} isInLibrary={isInLibrary(playlist.id)} />}
-            trigger={['contextMenu']}
+            overlay={
+              <DropdownMenu
+                playlistId={playlist.id}
+                isInLibrary={isInLibrary(playlist.id)}
+                refetch={refetch}              />
+            }
+            trigger={["contextMenu"]}
             onOpenChange={(flag) => !flag && setCurrentPlaylistId(null)}
           >
-          <Card
-            style={{ marginRight: "10px" }}
-            className="card-playlist"
-            key={playlist.id}
-            onClick={() => navigate(`/playlist/${playlist.id}`)}
-            onContextMenu={(e) => handleContextMenu(e, playlist.id)}
-            cover={
-              playlist.images && playlist.images.length > 0 ? (
-                <img
-                  style={{ width: "218px", height: "218px", padding: "8px" }}
-                  src={playlist.images[0].url}
-                  alt={playlist.name}
-                />
-              ) : null
-            }
-          >
-            <Meta
-              style={{ width: "218px" }}
-              title={<span className="meta-title">{playlist.name}</span>}
-              description={`Total Tracks: ${playlist.tracks.total}`}
-            />
-          </Card>
+            <Card
+              style={{ marginRight: "10px" }}
+              className="card-playlist"
+              key={playlist.id}
+              onClick={() => navigate(`/playlist/${playlist.id}`)}
+              onContextMenu={(e) => handleContextMenu(e, playlist.id)}
+              cover={
+                playlist.images && playlist.images.length > 0 ? (
+                  <img
+                    style={{ width: "218px", height: "218px", padding: "8px" }}
+                    src={playlist.images[0].url}
+                    alt={playlist.name}
+                  />
+                ) : (
+                  <img
+                    style={{ width: "218px", height: "218px" }}
+                    src={"https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"}
+                  />
+                )
+              }
+            >
+              <Meta
+                style={{ width: "218px" }}
+                title={<span className="meta-title">{playlist.name}</span>}
+                description={`Total Tracks: ${playlist.tracks.total}`}
+              />
+            </Card>
           </Dropdown>
         ))}
       </div>
@@ -167,7 +179,7 @@ const Main: React.FC = () => {
               ) : null
             }
           >
-            <Meta   
+            <Meta
               style={{ width: "218px" }}
               title={<span className="meta-title">{show.name}</span>}
               description={show.publisher}
@@ -187,34 +199,38 @@ const Main: React.FC = () => {
       <div className="card-playlist-container">
         {featuredPlaylists?.playlists.items.slice(0, 6).map((playlist) => (
           <Dropdown
-          key={playlist.id}
-          overlay={<DropdownMenu playlistId={playlist.id} isInLibrary={isInLibrary(playlist.id)} />}
-          trigger={['contextMenu']}
-          onOpenChange={(flag) => !flag && setCurrentPlaylistId(null)}
-        >
-          <Card
-            onClick={() => navigate(`/playlist/${playlist.id}`)}
-            style={{ marginRight: "10px" }}
-            className="card-playlist"
             key={playlist.id}
-            cover={
-              playlist.images && playlist.images.length > 0 ? (
-                <img
-                  style={{ width: "218px", height: "218px", padding: "8px" }}
-                  src={playlist.images[0].url}
-                  alt={playlist.name}
-                />
-              ) : null
+            overlay={
+              <DropdownMenu
+                playlistId={playlist.id}
+                isInLibrary={isInLibrary(playlist.id)}
+                refetch={refetch}              />
             }
+            trigger={["contextMenu"]}
+            onOpenChange={(flag) => !flag && setCurrentPlaylistId(null)}
           >
-            <Meta
-              style={{ width: "218px" }}
-              title={<span className="meta-title">{playlist.name}</span>}
-              description={playlist.description}
-            />
-          </Card>
+            <Card
+              onClick={() => navigate(`/playlist/${playlist.id}`)}
+              style={{ marginRight: "10px" }}
+              className="card-playlist"
+              key={playlist.id}
+              cover={
+                playlist.images && playlist.images.length > 0 ? (
+                  <img
+                    style={{ width: "218px", height: "218px", padding: "8px" }}
+                    src={playlist.images[0].url}
+                    alt={playlist.name}
+                  />
+                ) : null
+              }
+            >
+              <Meta
+                style={{ width: "218px" }}
+                title={<span className="meta-title">{playlist.name}</span>}
+                description={playlist.description}
+              />
+            </Card>
           </Dropdown>
-
         ))}
       </div>
       <div style={{ marginTop: "10px" }}>
