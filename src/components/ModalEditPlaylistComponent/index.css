@@ -1,0 +1,12 @@
+.ant-modal-content {
+    background-color: #282828 !important;
+}
+
+.ant-modal-title{
+    background-color: #282828 !important;
+    color: white !important;
+    font-size: 25px !important;
+}
+.ant-input{
+    border: none !important;
+}

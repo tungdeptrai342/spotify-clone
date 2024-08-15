@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -15,19 +15,40 @@ import { formatDuration } from "../ProfileUser";
 import "./index.css";
 import FooterComponent from "../../components/FooterComponent";
 import { Dropdown } from "antd";
-import DropdownMenu from "../../components/DropdownComponent";
 import DropdownPlaylistUser from "../../components/DropdownPlaytlistUserComponent";
+import EditPlaylistModal from "../../components/ModalEditPlaylistComponent";
 
 const PlaylistDetails = () => {
   const { playlistId } = useParams<{ playlistId: string }>();
 
-  const { data: playlistTracks, refetch } = useQuery<PlaylistTracksResponse, Error>(
-    ["playlistTracks", playlistId],
-    () => getPlaylistTracks(playlistId!),
-    {
-      enabled: !!playlistId,
-    }
-  );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPlaylist, setSelectedPlaylist] =
+    useState<PlaylistTracks | null>(null);
+
+  const handleEditClick = (playlist) => {
+    setSelectedPlaylist(playlist);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedPlaylist(null);
+  };
+
+  const { data: playlistTracks, refetch } = useQuery<
+    PlaylistTracksResponse,
+    Error
+  >(["playlistTracks", playlistId], () => getPlaylistTracks(playlistId!), {
+    enabled: !!playlistId,
+  });
+
+  interface PlaylistTracks {
+    id: string;
+    name: string;
+    images: { url: string }[];
+    owner: { display_name: string };
+    followers: { total: number };
+  }
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -45,6 +66,7 @@ const PlaylistDetails = () => {
         <div>
           <CardXL
             style={{ padding: "15px" }}
+            onClick={() => handleEditClick(playlistTracks)}
             cover={
               playlistTracks?.images && playlistTracks?.images?.length > 0 ? (
                 <img
@@ -147,7 +169,13 @@ const PlaylistDetails = () => {
           {playlistTracks?.tracks.items.map((item) => (
             <Dropdown
               key={item.id}
-              overlay={<DropdownPlaylistUser trackUri={`spotify:track:${item.track.id}`} refetch={refetch} currentPlaylistId={playlistTracks.id} />}
+              overlay={
+                <DropdownPlaylistUser
+                  trackUri={`spotify:track:${item.track.id}`}
+                  refetch={refetch}
+                  currentPlaylistId={playlistTracks.id}
+                />
+              }
               trigger={["contextMenu"]}
             >
               <div className="top-item-songs" key={item.track.id}>
@@ -237,6 +265,15 @@ const PlaylistDetails = () => {
                       </div>
                     }
                   />
+                  {selectedPlaylist && (
+                    <EditPlaylistModal
+                      visible={modalVisible}
+                      onClose={handleCloseModal}
+                      playlistId={selectedPlaylist.id}
+                      currentName={selectedPlaylist.name}
+                      currentImage={selectedPlaylist.images[0]?.url}
+                    />
+                  )}
                 </div>
                 <div className="top-item-album" style={{ flexBasis: "30%" }}>
                   <p
