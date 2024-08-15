@@ -24,6 +24,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import FooterComponent from "../../components/FooterComponent";
 import { useApiContext } from "../../Contex";
 import DropdownMenu from "../../components/DropdownComponent";
+import DropdownPlaylistUser from "../../components/DropdownPlaytlistUserComponent";
 
 const Main: React.FC = () => {
   const userId = "31kgeh75edzsu6zoftj3lwpiq4ye";
@@ -119,7 +120,8 @@ const Main: React.FC = () => {
               <DropdownMenu
                 playlistId={playlist.id}
                 isInLibrary={isInLibrary(playlist.id)}
-                refetch={refetch}              />
+                refetch={refetch}
+              />
             }
             trigger={["contextMenu"]}
             onOpenChange={(flag) => !flag && setCurrentPlaylistId(null)}
@@ -140,7 +142,9 @@ const Main: React.FC = () => {
                 ) : (
                   <img
                     style={{ width: "218px", height: "218px" }}
-                    src={"https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"}
+                    src={
+                      "https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"
+                    }
                   />
                 )
               }
@@ -165,26 +169,27 @@ const Main: React.FC = () => {
       </div>
       <div className="card-playlist-container">
         {showData?.shows.map((show) => (
-          <Card
-            style={{ marginRight: "10px" }}
-            className="card-playlist"
-            key={show.id}
-            cover={
-              show.images && show.images.length > 0 ? (
-                <img
-                  style={{ width: "218px", height: "218px", padding: "8px" }}
-                  src={show.images[0].url}
-                  alt={show.name}
-                />
-              ) : null
-            }
-          >
-            <Meta
-              style={{ width: "218px" }}
-              title={<span className="meta-title">{show.name}</span>}
-              description={show.publisher}
-            />
-          </Card>
+         
+            <Card
+              style={{ marginRight: "10px" }}
+              className="card-playlist"
+              key={show.id}
+              cover={
+                show.images && show.images.length > 0 ? (
+                  <img
+                    style={{ width: "218px", height: "218px", padding: "8px" }}
+                    src={show.images[0].url}
+                    alt={show.name}
+                  />
+                ) : null
+              }
+            >
+              <Meta
+                style={{ width: "218px" }}
+                title={<span className="meta-title">{show.name}</span>}
+                description={show.publisher}
+              />
+            </Card>
         ))}
       </div>
 
@@ -204,7 +209,8 @@ const Main: React.FC = () => {
               <DropdownMenu
                 playlistId={playlist.id}
                 isInLibrary={isInLibrary(playlist.id)}
-                refetch={refetch}              />
+                refetch={refetch}
+              />
             }
             trigger={["contextMenu"]}
             onOpenChange={(flag) => !flag && setCurrentPlaylistId(null)}

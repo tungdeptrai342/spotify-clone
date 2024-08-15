@@ -16,7 +16,6 @@ const AudioPage = () => {
       enabled: !!getAccessToken(),
     }
   );
-  console.log("aaa", ids)
 
   return <div className="user-profile">
      <div className="user-profile">

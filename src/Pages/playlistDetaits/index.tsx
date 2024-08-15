@@ -14,11 +14,14 @@ import {
 import { formatDuration } from "../ProfileUser";
 import "./index.css";
 import FooterComponent from "../../components/FooterComponent";
+import { Dropdown } from "antd";
+import DropdownMenu from "../../components/DropdownComponent";
+import DropdownPlaylistUser from "../../components/DropdownPlaytlistUserComponent";
 
 const PlaylistDetails = () => {
   const { playlistId } = useParams<{ playlistId: string }>();
 
-  const { data: playlistTracks } = useQuery<PlaylistTracksResponse, Error>(
+  const { data: playlistTracks, refetch } = useQuery<PlaylistTracksResponse, Error>(
     ["playlistTracks", playlistId],
     () => getPlaylistTracks(playlistId!),
     {
@@ -141,144 +144,150 @@ const PlaylistDetails = () => {
               </div>
             </div>
           </div>
-          {playlistTracks?.tracks.items.map((track) => (
-            <div className="top-item-songs" key={track.track.id}>
-              <div style={{ flexBasis: "40%" }}>
-                <CardXL
-                  style={{
-                    backgroundColor: "transparent",
-                    padding: "10px",
-                  }}
-                  key={track.track.id}
-                  cover={
-                    track.track.album.images?.length > 0 ? (
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <div
-                          className="top-item-stt"
-                          style={{
-                            width: "20px",
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <p
+          {playlistTracks?.tracks.items.map((item) => (
+            <Dropdown
+              key={item.id}
+              overlay={<DropdownPlaylistUser trackUri={`spotify:track:${item.track.id}`} refetch={refetch} currentPlaylistId={playlistTracks.id} />}
+              trigger={["contextMenu"]}
+            >
+              <div className="top-item-songs" key={item.track.id}>
+                <div style={{ flexBasis: "40%" }}>
+                  <CardXL
+                    style={{
+                      backgroundColor: "transparent",
+                      padding: "10px",
+                    }}
+                    key={item.track.id}
+                    cover={
+                      item.track.album.images?.length > 0 ? (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div
+                            className="top-item-stt"
                             style={{
-                              color: "white",
+                              width: "20px",
+                              display: "flex",
+                              justifyContent: "center",
                             }}
                           >
-                            {playlistTracks.tracks.items.indexOf(track) + 1}
-                          </p>
+                            <p
+                              style={{
+                                color: "white",
+                              }}
+                            >
+                              {playlistTracks.tracks.items.indexOf(item) + 1}
+                            </p>
+                          </div>
+                          <div className="top-item-img">
+                            <img
+                              src={item.track.album.images[0]?.url}
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                objectFit: "cover",
+                                marginLeft: "25px",
+                              }}
+                              alt={item.track.name}
+                            />
+                          </div>
                         </div>
-                        <div className="top-item-img">
-                          <img
-                            src={track.track.album.images[0]?.url}
+                      ) : null
+                    }
+                    title={
+                      <p
+                        style={{
+                          color: "white",
+                          maxWidth: "200px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.track.name}
+                      </p>
+                    }
+                    description={
+                      <div>
+                        {item.track.artists?.length > 0 && (
+                          <div
                             style={{
-                              width: "40px",
-                              height: "40px",
-                              objectFit: "cover",
-                              marginLeft: "25px",
+                              maxWidth: "300px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
-                            alt={track.track.name}
-                          />
-                        </div>
-                      </div>
-                    ) : null
-                  }
-                  title={
-                    <p
-                      style={{
-                        color: "white",
-                        maxWidth: "200px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {track.track.name}
-                    </p>
-                  }
-                  description={
-                    <div>
-                      {track.track.artists?.length > 0 && (
-                        <div
-                          style={{
-                            maxWidth: "300px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          <p>
-                            {track?.track?.artists?.map((artist, index) => (
-                              <React.Fragment key={artist.name}>
-                                <span
-                                  onClick={() =>
-                                    navigate(`/artists/${artist.id}`)
-                                  }
-                                >
-                                  {artist.name}
-                                </span>
+                          >
+                            <p>
+                              {item?.track?.artists?.map((artist, index) => (
+                                <React.Fragment key={artist.name}>
+                                  <span
+                                    onClick={() =>
+                                      navigate(`/artists/${artist.id}`)
+                                    }
+                                  >
+                                    {artist.name}
+                                  </span>
 
-                                {index < track?.track?.artists?.length - 1 &&
-                                  ", "}
-                              </React.Fragment>
-                            ))}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  }
-                />
-              </div>
-              <div className="top-item-album" style={{ flexBasis: "30%" }}>
-                <p
-                  style={{
-                    color: "white",
-                    maxWidth: "200px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                  onClick={() => navigate(`/album/${track.track.album.id}`)}
-                >
-                  {track.track.album.name}
-                </p>{" "}
-              </div>
-              <div className="top-item-date" style={{ flexBasis: "25%" }}>
-                <p
-                  style={{
-                    color: "white",
-                    width: "100px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {formatDate(track.added_at)}
-                </p>{" "}
-              </div>
-              <div className="top-item-duration" style={{ flexBasis: "10%" }}>
-                <div>
+                                  {index < item?.track?.artists?.length - 1 &&
+                                    ", "}
+                                </React.Fragment>
+                              ))}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    }
+                  />
+                </div>
+                <div className="top-item-album" style={{ flexBasis: "30%" }}>
                   <p
-                    style={{ color: "white", marginRight: "30px" }}
-                    className="icon-duration"
+                    style={{
+                      color: "white",
+                      maxWidth: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                    onClick={() => navigate(`/album/${item.track.album.id}`)}
                   >
-                    <PlusCircleOutlined />
-                  </p>
+                    {item.track.album.name}
+                  </p>{" "}
                 </div>
-                <div>
-                  <p>{formatDuration(track.track.duration_ms)}</p>
-                </div>
-                <div>
+                <div className="top-item-date" style={{ flexBasis: "25%" }}>
                   <p
-                    style={{ color: "white", marginLeft: "30px" }}
-                    className="icon-duration"
+                    style={{
+                      color: "white",
+                      width: "100px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
                   >
-                    <SmallDashOutlined />
-                  </p>
+                    {formatDate(item.added_at)}
+                  </p>{" "}
+                </div>
+                <div className="top-item-duration" style={{ flexBasis: "10%" }}>
+                  <div>
+                    <p
+                      style={{ color: "white", marginRight: "30px" }}
+                      className="icon-duration"
+                    >
+                      <PlusCircleOutlined />
+                    </p>
+                  </div>
+                  <div>
+                    <p>{formatDuration(item.track.duration_ms)}</p>
+                  </div>
+                  <div>
+                    <p
+                      style={{ color: "white", marginLeft: "30px" }}
+                      className="icon-duration"
+                    >
+                      <SmallDashOutlined />
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Dropdown>
           ))}
         </div>
       </div>

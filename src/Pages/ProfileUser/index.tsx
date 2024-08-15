@@ -16,10 +16,11 @@ import {
   getArtistsFL,
   getTopTracks,
 } from "../../services/getTopItem";
-import { Card } from "antd";
+import { Card, Dropdown } from "antd";
 import Meta from "antd/es/card/Meta";
 import { PlusCircleOutlined, SmallDashOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import DropdownMenu from "../../components/DropdownComponent";
 
 export function formatDuration(durationMs: number): string {
   const minutes = Math.floor(durationMs / 60000);
@@ -47,7 +48,7 @@ const ProfileUser = () => {
     }
   );
 
-  const { data: userPlaylist } = useQuery<PlaylistsResponse, Error>(
+  const { data: userPlaylist, refetch } = useQuery<PlaylistsResponse, Error>(
     ["playlists", userId],
     () => getUserPlaylists(userId),
     {
@@ -65,7 +66,9 @@ const ProfileUser = () => {
   const navigate = useNavigate();
 
   const playlistCount = userPlaylist?.items.length || 0;
-
+  const isInLibrary = (playlistId: string) => {
+    return userPlaylist?.items.some((playlist) => playlist.id === playlistId);
+  };
   return (
     <div className="profile-user">
       <div className="profile-user-container">
@@ -245,27 +248,41 @@ const ProfileUser = () => {
           style={{ marginTop: "20px", marginLeft: "20px" }}
         >
           {userPlaylist?.items.slice(0, 7).map((playlist) => (
-            <Card
-              className="card-music-page"
+            <Dropdown
               key={playlist.id}
-              onClick={() => navigate(`/playlist/${playlist.id}`)}
-              cover={
-                playlist.images && playlist.images.length > 0 ? (
-                  <img src={playlist.images[0].url} alt={playlist.name} />
-                ) : (
-                  <img
-                    src={"https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"}
-                  />
-                )
+              overlay={
+                <DropdownMenu
+                  playlistId={playlist.id}
+                  isInLibrary={isInLibrary(playlist.id)}
+                  refetch={refetch}
+                />
               }
+              trigger={["contextMenu"]}
             >
-              <Meta
-                title={<span className="meta-title">{playlist.name}</span>}
-                description={
-                  <span className="description">{playlist.description}</span>
+              <Card
+                className="card-music-page"
+                key={playlist.id}
+                onClick={() => navigate(`/playlist/${playlist.id}`)}
+                cover={
+                  playlist.images && playlist.images.length > 0 ? (
+                    <img src={playlist.images[0].url} alt={playlist.name} />
+                  ) : (
+                    <img
+                      src={
+                        "https://lastfm.freetls.fastly.net/i/u/300x300/6d4109c4072cc6d0f7905d1825dfd6b6.jpg"
+                      }
+                    />
+                  )
                 }
-              />
-            </Card>
+              >
+                <Meta
+                  title={<span className="meta-title">{playlist.name}</span>}
+                  description={
+                    <span className="description">{playlist.description}</span>
+                  }
+                />
+              </Card>
+            </Dropdown>
           ))}
         </div>
         <h1

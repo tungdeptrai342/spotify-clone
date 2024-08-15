@@ -1,12 +1,11 @@
-// DropdownMenu.tsx
 import React from 'react';
 import { Menu, notification } from 'antd';
 import { useMutation } from 'react-query';
 import { deletePlaylist, putPlaylist } from '../../services/playlistDetails';
 
 interface DropdownMenuProps {
-  playlistId: string;
-  isInLibrary: boolean | undefined;
+  playlistId?: string;
+  isInLibrary?: boolean | undefined;
   refetch: () => void;
 
 }

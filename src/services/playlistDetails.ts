@@ -21,10 +21,11 @@ interface Track {
 interface ItemsPlaylist {
   track: Track;
   added_at: string;
+  id:string;
 }
 
 export interface PlaylistTracksResponse {
-  id: string;
+  id: string ;
   name: string;
   images: { url: string }[];
   owner: { id: string; display_name: string; images: { url: string }[] };
@@ -51,6 +52,7 @@ export const getPlaylistTracks = async (
   const result = await request.get(`/v1/playlists/${playlistId}`);
   return result.data;
 };
+
 export const getTotalTracks = (total: PlaylistTracksResponse): number => {
   return total.tracks.items.length;
 };
