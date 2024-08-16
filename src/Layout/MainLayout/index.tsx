@@ -446,10 +446,10 @@ const MainLayout: React.FC = () => {
               </Col>
             )}
           </Row>
-
-          {breadcrumbPaths.includes(location.pathname) && (
-            <CustomBreadcrumb items={breadcrumbItems} />
-          )}
+            
+            {token && breadcrumbPaths.includes(location.pathname) && (
+              <CustomBreadcrumb items={breadcrumbItems} />
+            )}
 
           <Suspense fallback={<Spin />}>
             <Outlet />

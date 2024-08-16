@@ -4,17 +4,19 @@ const ACCESS_TOKEN = "ACCESS_TOKEN";
 
 import { useEffect } from "react";
 
-const useSpotifyAuth = () => {
+export const useSpotifyAuth = () => {
   useEffect(() => {
     const hash = window.location.hash;
     const tokenMatch = hash.match(/access_token=([^&]*)/);
     if (tokenMatch) {
       const token = tokenMatch[1];
       localStorage.setItem("spotifyToken", token);
-      window.location.hash = ""; // Clear hash
+      window.location.hash = "";
     }
   }, []);
 };
+
+
 
 export const getAccessToken = () => {
   return localStorage.getItem("spotifyToken");

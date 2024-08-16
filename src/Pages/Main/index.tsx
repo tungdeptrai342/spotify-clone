@@ -25,14 +25,31 @@ import FooterComponent from "../../components/FooterComponent";
 import { useApiContext } from "../../Contex";
 import DropdownMenu from "../../components/DropdownComponent";
 import DropdownPlaylistUser from "../../components/DropdownPlaytlistUserComponent";
+import DropdownAlbum from "../../components/DropdownAlbumComponent";
+import DropdownArtist from "../../components/DropdownFollowArtistComponent";
+import {
+  checkIfFollowing,
+  checkMultipleArtistsFollowing,
+} from "../../services/playlistDetails";
+import { ApiDataTypeCate, getCategories } from "../../services/getCategories";
+import CardPlaylist from "../../components/CardPlaylist";
 
 const Main: React.FC = () => {
   const userId = "31kgeh75edzsu6zoftj3lwpiq4ye";
   const [currentPlaylistId, setCurrentPlaylistId] = useState<string | null>(
     null
   );
-
+  const token = getAccessToken();
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate('/login');
+  //   }else{
+  //     navigate('/')
+  //   }
+  // }, [token]);
+
   const {
     userPlaylist,
     setUserPlaylist,
@@ -58,6 +75,7 @@ const Main: React.FC = () => {
       onSuccess: (data) => setUserPlaylist(data),
     }
   );
+
 
   useQuery<SavedAlbumsResponse, Error>(["savedAlbums"], getUserSavedAlbums, {
     enabled: !!getAccessToken() && !savedAlbumsData,
@@ -107,10 +125,29 @@ const Main: React.FC = () => {
     return userPlaylist?.items.some((playlist) => playlist.id === playlistId);
   };
 
+  const isInLibraryAlbum = (albumId: string) => {
+    return savedAlbumsData?.items.some((album) => album.album.id === albumId);
+  };
+
+  const artistIds = artists?.artists.map((artist) => artist.id) || [];
+
+  const { data: followingStatus } = useQuery<boolean[], Error>(
+    ["followingStatus", artistIds],
+    () => checkMultipleArtistsFollowing(artistIds),
+    {
+      enabled: !!artists?.artists.length,
+    }
+  );
+
+  const isInFollowing = (artistId: string) => {
+    const index = artistIds.indexOf(artistId);
+    return followingStatus?.[index];
+  };
+
   return (
     <div className="main">
       <Link to={""} style={{ color: "white", textDecoration: "none" }}>
-        <h1> Playlist của {userData?.display_name}</h1>
+        {token && <h1> Playlist của {userData?.display_name}</h1>}
       </Link>
       <div className="card-playlist-container">
         {userPlaylist?.items.slice(0, 6).map((playlist) => (
@@ -164,32 +201,31 @@ const Main: React.FC = () => {
           to={""}
           style={{ color: "white", textDecoration: "none", marginTop: "20px" }}
         >
-          <h1>Try some show</h1>
+          {token && <h1>Try some show</h1>}
         </Link>
       </div>
       <div className="card-playlist-container">
         {showData?.shows.map((show) => (
-         
-            <Card
-              style={{ marginRight: "10px" }}
-              className="card-playlist"
-              key={show.id}
-              cover={
-                show.images && show.images.length > 0 ? (
-                  <img
-                    style={{ width: "218px", height: "218px", padding: "8px" }}
-                    src={show.images[0].url}
-                    alt={show.name}
-                  />
-                ) : null
-              }
-            >
-              <Meta
-                style={{ width: "218px" }}
-                title={<span className="meta-title">{show.name}</span>}
-                description={show.publisher}
-              />
-            </Card>
+          <Card
+            style={{ marginRight: "10px" }}
+            className="card-playlist"
+            key={show.id}
+            cover={
+              show.images && show.images.length > 0 ? (
+                <img
+                  style={{ width: "218px", height: "218px", padding: "8px" }}
+                  src={show.images[0].url}
+                  alt={show.name}
+                />
+              ) : null
+            }
+          >
+            <Meta
+              style={{ width: "218px" }}
+              title={<span className="meta-title">{show.name}</span>}
+              description={show.publisher}
+            />
+          </Card>
         ))}
       </div>
 
@@ -198,7 +234,7 @@ const Main: React.FC = () => {
           to={""}
           style={{ color: "white", textDecoration: "none", marginTop: "20px" }}
         >
-          <h1>Playlist today</h1>
+          {token && <h1>Playlist today</h1>}
         </Link>
       </div>
       <div className="card-playlist-container">
@@ -244,32 +280,44 @@ const Main: React.FC = () => {
           to={""}
           style={{ color: "white", textDecoration: "none", marginTop: "20px" }}
         >
-          <h1>Album today</h1>
+          {token && <h1>Album today</h1>}
         </Link>
       </div>
       <div className="card-playlist-container">
         {savedAlbumsData?.items.slice(0, 6).map(({ album }) => (
-          <Card
-            style={{ marginRight: "10px" }}
-            className="card-playlist"
+          <Dropdown
             key={album.id}
-            onClick={() => navigate(`/album/${album.id}`)}
-            cover={
-              album.images && album.images.length > 0 ? (
-                <img
-                  style={{ width: "218px", height: "218px", padding: "8px" }}
-                  src={album.images[0].url}
-                  alt={album.name}
-                />
-              ) : null
+            overlay={
+              <DropdownAlbum
+                playlistId={[album.id]}
+                isInLibrary={isInLibraryAlbum(album.id)}
+                refetch={refetch}
+              />
             }
+            trigger={["contextMenu"]}
           >
-            <Meta
-              style={{ width: "218px" }}
-              title={<span className="meta-title">{album.name}</span>}
-              description={album.name}
-            />
-          </Card>
+            <Card
+              style={{ marginRight: "10px" }}
+              className="card-playlist"
+              key={album.id}
+              onClick={() => navigate(`/album/${album.id}`)}
+              cover={
+                album.images && album.images.length > 0 ? (
+                  <img
+                    style={{ width: "218px", height: "218px", padding: "8px" }}
+                    src={album.images[0].url}
+                    alt={album.name}
+                  />
+                ) : null
+              }
+            >
+              <Meta
+                style={{ width: "218px" }}
+                title={<span className="meta-title">{album.name}</span>}
+                description={album.name}
+              />
+            </Card>
+          </Dropdown>
         ))}
       </div>
 
@@ -283,7 +331,7 @@ const Main: React.FC = () => {
               marginTop: "20px",
             }}
           >
-            <h1>Artists for you</h1>
+            {token && <h1>Artists for you</h1>}
           </Link>
         </div>
         <div
@@ -291,32 +339,44 @@ const Main: React.FC = () => {
           style={{ display: "flex", marginTop: "20px" }}
         >
           {artists?.artists.map((artists) => (
-            <Card
-              onClick={() => navigate(`/artists/${artists.id}`)}
-              style={{ marginRight: "10px" }}
-              className="card-playlist"
+            <Dropdown
               key={artists.id}
-              cover={
-                artists.images && artists.images.length > 0 ? (
-                  <img
-                    style={{
-                      width: "218px",
-                      height: "218px",
-                      padding: "8px",
-                      borderRadius: "50%",
-                    }}
-                    src={artists.images[0].url}
-                    alt={artists.name}
-                  />
-                ) : null
+              overlay={
+                <DropdownArtist
+                  playlistId={artists.id}
+                  isInLibrary={isInFollowing(artists.id)}
+                  refetch={refetch}
+                />
               }
+              trigger={["contextMenu"]}
             >
-              <Meta
-                style={{ width: "218px" }}
-                title={<span className="meta-title">{artists.name}</span>}
-                description={artists.name}
-              />
-            </Card>
+              <Card
+                onClick={() => navigate(`/artists/${artists.id}`)}
+                style={{ marginRight: "10px" }}
+                className="card-playlist"
+                key={artists.id}
+                cover={
+                  artists.images && artists.images.length > 0 ? (
+                    <img
+                      style={{
+                        width: "218px",
+                        height: "218px",
+                        padding: "8px",
+                        borderRadius: "50%",
+                      }}
+                      src={artists.images[0].url}
+                      alt={artists.name}
+                    />
+                  ) : null
+                }
+              >
+                <Meta
+                  style={{ width: "218px" }}
+                  title={<span className="meta-title">{artists.name}</span>}
+                  description={artists.name}
+                />
+              </Card>
+            </Dropdown>
           ))}
         </div>
       </div>
@@ -333,7 +393,7 @@ const Main: React.FC = () => {
               marginTop: "20px",
             }}
           >
-            <h1>Audiobooks for you</h1>
+            {token && <h1>Audiobooks for you</h1>}
           </Link>
         </div>
 
@@ -368,6 +428,7 @@ const Main: React.FC = () => {
             </Card>
           ))}
         </div>
+
       </div>
       <FooterComponent />
     </div>

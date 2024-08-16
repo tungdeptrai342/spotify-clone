@@ -68,14 +68,15 @@ export const putPlaylist = async (playlist_id) => {
   });
   return result.data;
 };
-export const putArtist = async (id: string) => {
+
+export const putArtist = async (id: string | undefined) => {
   const result = await request.put(`/v1/me/following`, null, {
     params: { type: "artist", ids: id },
   });
   return result.data;
 };
 
-export const deleteArtist = async (id: string ) => {
+export const deleteArtist = async (id: string | undefined) => {
   const result = await request.delete(`/v1/me/following`, {
     params: { type: "artist", ids: id },
   });
@@ -87,7 +88,7 @@ export const checkIfFollowing = async (id: string | undefined) => {
   const result = await request.get(`/v1/me/following/contains`, {
     params: { type: "artist", ids: id },
   });
-  return result.data[0]; // Trả về true hoặc false tùy thuộc vào việc người dùng đã theo dõi nghệ sĩ hay chưa
+  return result.data[0];
 };
 
 export const deletePlaylist = async (playlist_id) => {
@@ -95,4 +96,12 @@ export const deletePlaylist = async (playlist_id) => {
     params: { playlist_id },
   });
   return result.data;
+};
+
+
+export const checkMultipleArtistsFollowing = async (artistIds: string[]) => {
+  const result = await request.get(`/v1/me/following/contains`, {
+    params: { type: "artist", ids: artistIds.join(",") },
+  });
+  return result.data; 
 };

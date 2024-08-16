@@ -29,15 +29,6 @@ export interface ResponseArtistAlbums {
   items: ItemsArtistAlbum[];
 }
 
-interface ItemRelatedArtist {
-  images: { url: string }[];
-  name: string;
-  type: string;
-  id: string
-}
-export interface ResponseRelatedArtist {
-  artists: ItemRelatedArtist[]
-}
 
 export const getTopArtist = async (id: string): Promise<ArtistTopItem> => {
   const result: AxiosResponse<ArtistTopItem> = await request.get(
@@ -61,7 +52,21 @@ export const getArtistItem = async (
   return result.data;
 };
 
+interface ItemRelatedArtist {
+  images: { url: string }[];
+  name: string;
+  type: string;
+  id: string
+}
+export interface ResponseRelatedArtist {
+  artists: ItemRelatedArtist[]
+}
 export const getRelatedArtist = async(id: string | null): Promise<ResponseRelatedArtist> => {
   const result: AxiosResponse<ResponseRelatedArtist> = await request.get(`/v1/artists/${id}/related-artists`);
   return result.data
 }
+
+const fetchFollowedArtists = async (): Promise<ItemRelatedArtist[]> => {
+  const result: AxiosResponse<ResponseRelatedArtist> = await request.get('/v1/me/following?type=artist');
+  return result.data.artists; // Adjust this based on the actual response structure
+};

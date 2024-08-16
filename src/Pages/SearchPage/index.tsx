@@ -11,10 +11,19 @@ import {
 } from "../../services/search";
 import { useSearch } from "../../Contex/searchContext";
 import { Link, useNavigate } from "react-router-dom";
-import { Card } from "antd";
+import { Card, Dropdown } from "antd";
 import Meta from "antd/es/card/Meta";
+import DropdownAddSong from "../../components/DropdownAddSongComponent";
+import DropdownMenu from "../../components/DropdownComponent";
+import { getUserPlaylists, PlaylistsResponse } from "../../services/getUsers";
+import { getAccessToken } from "../../config/accessToken";
+import { useApiContext } from "../../Contex";
+import DropdownAlbum from "../../components/DropdownAlbumComponent";
 
 const SearchPage = () => {
+  const { savedAlbumsData, setSavedAlbumsData } = useApiContext();
+
+  const { userPlaylist, setUserPlaylist } = useApiContext();
   const { searchQuery } = useSearch();
   const {
     data: categoriesData,
@@ -24,6 +33,7 @@ const SearchPage = () => {
 
   const {
     data: searchData,
+    refetch,
     error: searchError,
     isLoading: isSearchLoading,
   } = useQuery<SearchResponse, Error>(
@@ -34,8 +44,25 @@ const SearchPage = () => {
     }
   );
   const navigate = useNavigate();
+  const userId = "31kgeh75edzsu6zoftj3lwpiq4ye";
 
   const limitedCategoriesData = categoriesData?.slice(0, 20);
+
+  const isInLibraryAlbum = (albumId: string) => {
+    return savedAlbumsData?.items.some((album) => album.album.id === albumId);
+  };
+
+  useQuery<PlaylistsResponse, Error>(
+    ["playlists", userId],
+    () => getUserPlaylists(userId),
+    {
+      enabled: !!getAccessToken() && !userPlaylist,
+      onSuccess: (data) => setUserPlaylist(data),
+    }
+  );
+  const isInLibrary = (playlistId: string) => {
+    return userPlaylist?.items.some((playlist) => playlist.id === playlistId);
+  };
 
   return (
     <div className="user-profile">
@@ -106,31 +133,45 @@ const SearchPage = () => {
 
               <div style={{ display: "flex" }}>
                 {searchData?.albums.items.slice(0, 5).map((artists) => (
-                  <Card
-                    onClick={() => navigate(`/album/${artists.id}`)}
-                    style={{ marginRight: "10px" }}
-                    className="card-playlist"
+                  <Dropdown
                     key={artists.id}
-                    cover={
-                      artists.images && artists.images.length > 0 ? (
-                        <img
-                          style={{
-                            width: "218px",
-                            height: "218px",
-                            padding: "8px",
-                          }}
-                          src={artists.images[0].url}
-                          alt={artists.name}
-                        />
-                      ) : null
+                    overlay={
+                      <DropdownAlbum
+                        playlistId={[artists.id]}
+                        isInLibrary={isInLibraryAlbum(artists.id)}
+                        refetch={refetch}
+                      />
                     }
+                    trigger={["contextMenu"]}
                   >
-                    <Meta
-                      style={{ width: "218px" }}
-                      title={<span className="meta-title">{artists.name}</span>}
-                      description={artists.artists[0].name}
-                    />
-                  </Card>
+                    <Card
+                      onClick={() => navigate(`/album/${artists.id}`)}
+                      style={{ marginRight: "10px" }}
+                      className="card-playlist"
+                      key={artists.id}
+                      cover={
+                        artists.images && artists.images.length > 0 ? (
+                          <img
+                            style={{
+                              width: "218px",
+                              height: "218px",
+                              padding: "8px",
+                            }}
+                            src={artists.images[0].url}
+                            alt={artists.name}
+                          />
+                        ) : null
+                      }
+                    >
+                      <Meta
+                        style={{ width: "218px" }}
+                        title={
+                          <span className="meta-title">{artists.name}</span>
+                        }
+                        description={artists.artists[0].name}
+                      />
+                    </Card>
+                  </Dropdown>
                 ))}
               </div>
             </div>
@@ -149,34 +190,47 @@ const SearchPage = () => {
               >
                 Playlist
               </Link>
-
               <div style={{ display: "flex" }}>
                 {searchData?.playlists.items.slice(0, 5).map((artists) => (
-                  <Card
-                    onClick={() => navigate(`/playlist/${artists.id}`)}
-                    style={{ marginRight: "10px" }}
-                    className="card-playlist"
+                  <Dropdown
                     key={artists.id}
-                    cover={
-                      artists.images && artists.images.length > 0 ? (
-                        <img
-                          style={{
-                            width: "218px",
-                            height: "218px",
-                            padding: "8px",
-                          }}
-                          src={artists.images[0].url}
-                          alt={artists.name}
-                        />
-                      ) : null
+                    overlay={
+                      <DropdownMenu
+                        playlistId={artists.id}
+                        isInLibrary={isInLibrary(artists.id)}
+                        refetch={refetch}
+                      />
                     }
+                    trigger={["contextMenu"]}
                   >
-                    <Meta
-                      style={{ width: "218px" }}
-                      title={<span className="meta-title">{artists.name}</span>}
-                      description={artists.name}
-                    />
-                  </Card>
+                    <Card
+                      onClick={() => navigate(`/playlist/${artists.id}`)}
+                      style={{ marginRight: "10px" }}
+                      className="card-playlist"
+                      key={artists.id}
+                      cover={
+                        artists.images && artists.images.length > 0 ? (
+                          <img
+                            style={{
+                              width: "218px",
+                              height: "218px",
+                              padding: "8px",
+                            }}
+                            src={artists.images[0].url}
+                            alt={artists.name}
+                          />
+                        ) : null
+                      }
+                    >
+                      <Meta
+                        style={{ width: "218px" }}
+                        title={
+                          <span className="meta-title">{artists.name}</span>
+                        }
+                        description={artists.name}
+                      />
+                    </Card>
+                  </Dropdown>
                 ))}
               </div>
             </div>
@@ -195,31 +249,44 @@ const SearchPage = () => {
 
               <div style={{ display: "flex" }}>
                 {searchData?.tracks.items.slice(0, 5).map((artists) => (
-                  <Card
-                    style={{ marginRight: "10px" }}
-                    className="card-playlist"
+                  <Dropdown
                     key={artists.id}
-                    cover={
-                      artists.album.images &&
-                      artists.album.images.length > 0 ? (
-                        <img
-                          style={{
-                            width: "218px",
-                            height: "218px",
-                            padding: "8px",
-                          }}
-                          src={artists.album.images[0].url}
-                          alt={artists.name}
-                        />
-                      ) : null
+                    overlay={
+                      <DropdownAddSong
+                        trackUri={`spotify:track:${artists.id}`}
+                        refetch={refetch}
+                      />
                     }
+                    trigger={["contextMenu"]}
                   >
-                    <Meta
-                      style={{ width: "218px" }}
-                      title={<span className="meta-title">{artists.name}</span>}
-                      description={artists.artists[0].name}
-                    />
-                  </Card>
+                    <Card
+                      style={{ marginRight: "10px" }}
+                      className="card-playlist"
+                      key={artists.id}
+                      cover={
+                        artists.album.images &&
+                        artists.album.images.length > 0 ? (
+                          <img
+                            style={{
+                              width: "218px",
+                              height: "218px",
+                              padding: "8px",
+                            }}
+                            src={artists.album.images[0].url}
+                            alt={artists.name}
+                          />
+                        ) : null
+                      }
+                    >
+                      <Meta
+                        style={{ width: "218px" }}
+                        title={
+                          <span className="meta-title">{artists.name}</span>
+                        }
+                        description={artists.artists[0].name}
+                      />
+                    </Card>
+                  </Dropdown>
                 ))}
               </div>
             </div>

@@ -50,3 +50,19 @@ export const getAlbumArtist = async (
   const reuslt = await request.get(`/v1/artists/${artistId}/albums`);
   return reuslt.data;
 };
+
+
+export const putAlbums = async (ids: string[] | undefined) => {
+  const result = await request.put('v1/me/albums', {
+    ids: ids
+  });
+  return result;
+};
+
+export const deleteAlbums = async (ids: string[] | undefined) => {
+  const result = await request.delete('v1/me/albums', {
+    data: { ids: ids }
+  });
+  return result;
+};
+

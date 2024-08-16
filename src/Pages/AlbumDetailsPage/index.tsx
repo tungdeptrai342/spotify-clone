@@ -16,14 +16,17 @@ import {
   SmallDashOutlined,
 } from "@ant-design/icons";
 import { formatDuration } from "../ProfileUser";
-import { Card } from "antd";
+import { Card, Dropdown } from "antd";
 import Meta from "antd/es/card/Meta";
+import DropdownAddSong from "../../components/DropdownAddSongComponent";
+import DropdownAlbum from "../../components/DropdownAlbumComponent";
+import { useApiContext } from "../../Contex";
 
 const AlbumDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [artistId, setArtistId] = useState<string | null>(null);
 
-  const { data: albumDetail } = useQuery<AlbumDetailsResponse, Error>(
+  const { data: albumDetail, refetch } = useQuery<AlbumDetailsResponse, Error>(
     ["albumDetail", id],
     () => getAlbumDetails(id!),
     {
@@ -34,7 +37,7 @@ const AlbumDetail = () => {
     }
   );
 
-  const { data: albumArtist } = useQuery<AlbumOfArtists, Error>(
+  const { data: albumArtist, refetch: albumsArtist } = useQuery<AlbumOfArtists, Error>(
     ["AlbumArtist", artistId],
     () => getAlbumArtist(artistId!),
     {
@@ -42,6 +45,13 @@ const AlbumDetail = () => {
     }
   );
   const navigate = useNavigate();
+
+  const { savedAlbumsData, setSavedAlbumsData } = useApiContext();
+  
+  const isInLibraryAlbum = (albumId: string) => {
+    return savedAlbumsData?.items.some((album) => album.album.id === albumId);
+  };
+
 
   return (
     <div className="playlist-details">
@@ -153,115 +163,126 @@ const AlbumDetail = () => {
             </div>
           </div>
           {albumDetail?.tracks.items.map((track) => (
-            <div className="top-item-songs" key={track.id}>
-              <div style={{ flexBasis: "80%" }}>
-                <CardXL
-                  style={{
-                    backgroundColor: "transparent",
-                    padding: "10px",
-                  }}
-                  key={track.id}
-                  cover={
-                    albumDetail.images?.length > 0 ? (
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <div
-                          className="top-item-stt"
-                          style={{
-                            width: "20px",
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <p
+            <Dropdown
+              key={track.id}
+              overlay={
+                <DropdownAddSong
+                  trackUri={`spotify:track:${track.id}`}
+                  refetch={refetch}
+                />
+              }
+              trigger={["contextMenu"]}
+            >
+              <div className="top-item-songs" key={track.id}>
+                <div style={{ flexBasis: "80%" }}>
+                  <CardXL
+                    style={{
+                      backgroundColor: "transparent",
+                      padding: "10px",
+                    }}
+                    key={track.id}
+                    cover={
+                      albumDetail.images?.length > 0 ? (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div
+                            className="top-item-stt"
                             style={{
-                              color: "white",
+                              width: "20px",
+                              display: "flex",
+                              justifyContent: "center",
                             }}
                           >
-                            {albumDetail.tracks.items.indexOf(track) + 1}
-                          </p>
+                            <p
+                              style={{
+                                color: "white",
+                              }}
+                            >
+                              {albumDetail.tracks.items.indexOf(track) + 1}
+                            </p>
+                          </div>
+                          <div className="top-item-img">
+                            <img
+                              src={albumDetail.images[0]?.url}
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                objectFit: "cover",
+                                marginLeft: "25px",
+                              }}
+                            />
+                          </div>
                         </div>
-                        <div className="top-item-img">
-                          <img
-                            src={albumDetail.images[0]?.url}
+                      ) : null
+                    }
+                    title={
+                      <p
+                        style={{
+                          color: "white",
+                          maxWidth: "200px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {track.name}
+                      </p>
+                    }
+                    description={
+                      <div>
+                        {track.artists?.length > 0 && (
+                          <div
                             style={{
-                              width: "40px",
-                              height: "40px",
-                              objectFit: "cover",
-                              marginLeft: "25px",
+                              maxWidth: "300px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
-                          />
-                        </div>
+                          >
+                            <p>
+                              {track?.artists?.map((artist, index) => (
+                                <React.Fragment key={artist.name}>
+                                  <span
+                                    onClick={() =>
+                                      navigate(`/artists/${artist.id}`)
+                                    }
+                                  >
+                                    {artist.name}
+                                  </span>
+                                  {index < track?.artists?.length - 1 && ", "}
+                                </React.Fragment>
+                              ))}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    ) : null
-                  }
-                  title={
-                    <p
-                      style={{
-                        color: "white",
-                        maxWidth: "200px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {track.name}
-                    </p>
-                  }
-                  description={
-                    <div>
-                      {track.artists?.length > 0 && (
-                        <div
-                          style={{
-                            maxWidth: "300px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          <p>
-                            {track?.artists?.map((artist, index) => (
-                              <React.Fragment key={artist.name}>
-                                <span
-                                  onClick={() =>
-                                    navigate(`/artists/${artist.id}`)
-                                  }
-                                >
-                                  {artist.name}
-                                </span>
-                                {index < track?.artists?.length - 1 && ", "}
-                              </React.Fragment>
-                            ))}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  }
-                />
-              </div>
+                    }
+                  />
+                </div>
 
-              <div className="top-item-duration" style={{ flexBasis: "20%" }}>
-                <div>
-                  <p
-                    style={{ color: "white", marginRight: "30px" }}
-                    className="icon-duration"
-                  >
-                    <PlusCircleOutlined />
-                  </p>
+                <div className="top-item-duration" style={{ flexBasis: "20%" }}>
+                  <div>
+                    <p
+                      style={{ color: "white", marginRight: "30px" }}
+                      className="icon-duration"
+                    >
+                      <PlusCircleOutlined />
+                    </p>
+                  </div>
+                  <div>
+                    <p>{formatDuration(track.duration_ms)}</p>
+                  </div>
+                  <div>
+                    <p
+                      style={{ color: "white", marginLeft: "30px" }}
+                      className="icon-duration"
+                    >
+                      <SmallDashOutlined />
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p>{formatDuration(track.duration_ms)}</p>
-                </div>
-                <div>
-                  <p
-                    style={{ color: "white", marginLeft: "30px" }}
-                    className="icon-duration"
-                  >
-                    <SmallDashOutlined />
-                  </p>
-                </div>
+                <div></div>
               </div>
-              <div></div>
-            </div>
+            </Dropdown>
           ))}
         </div>
 
@@ -293,23 +314,35 @@ const AlbumDetail = () => {
           style={{ marginTop: "20px", marginLeft: "20px" }}
         >
           {albumArtist?.items?.slice(0, 7).map((playlist) => (
-            <Card
-              className="card-music-page"
+            <Dropdown
               key={playlist.id}
-              onClick={() => navigate(`/album/${playlist.id}`)}
-              cover={
-                playlist.images && playlist.images.length > 0 ? (
-                  <img src={playlist.images[0].url} alt={playlist.name} />
-                ) : null
+              overlay={
+                <DropdownAlbum
+                  playlistId={[playlist.id]}
+                  isInLibrary={isInLibraryAlbum(playlist.id)}
+                  refetch={albumsArtist}
+                />
               }
+              trigger={["contextMenu"]}
             >
-              <Meta
-                title={<span className="meta-title">{playlist.name}</span>}
-                description={
-                  <span className="description">{playlist.release_date}</span>
+              <Card
+                className="card-music-page"
+                key={playlist.id}
+                onClick={() => navigate(`/album/${playlist.id}`)}
+                cover={
+                  playlist.images && playlist.images.length > 0 ? (
+                    <img src={playlist.images[0].url} alt={playlist.name} />
+                  ) : null
                 }
-              />
-            </Card>
+              >
+                <Meta
+                  title={<span className="meta-title">{playlist.name}</span>}
+                  description={
+                    <span className="description">{playlist.release_date}</span>
+                  }
+                />
+              </Card>
+            </Dropdown>
           ))}
         </div>
       </div>

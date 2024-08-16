@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "react-query";
 import {
   ArtistsDetails,
   checkIfFollowing,
+  checkMultipleArtistsFollowing,
   deleteArtist,
   getArtistDetails,
   putArtist,
@@ -21,8 +22,12 @@ import {
 } from "../../services/getTopArtist";
 import { PlusCircleOutlined, SmallDashOutlined } from "@ant-design/icons";
 import { formatDuration } from "../ProfileUser";
-import { Breadcrumb, Button, Card, notification } from "antd";
+import { Breadcrumb, Button, Card, Dropdown, notification } from "antd";
 import Meta from "antd/es/card/Meta";
+import DropdownAddSong from "../../components/DropdownAddSongComponent";
+import DropdownAlbum from "../../components/DropdownAlbumComponent";
+import { useApiContext } from "../../Contex";
+import DropdownArtist from "../../components/DropdownFollowArtistComponent";
 
 const ArtistsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +36,8 @@ const ArtistsDetail = () => {
   const [showAll, setShowAll] = useState(false);
   const [albumType, setAlbumType] = useState("album");
   const [hasAlbums, setHasAlbums] = useState(true);
+
+  const { savedAlbumsData, setSavedAlbumsData } = useApiContext();
 
   const { data: artistDetails } = useQuery<ArtistsDetails, Error>(
     ["playlist-Detail", id],
@@ -42,6 +49,7 @@ const ArtistsDetail = () => {
       },
     }
   );
+
   const { data: isFollowing, refetch } = useQuery<boolean, Error>(
     ["isFollowing", id],
     () => checkIfFollowing(id),
@@ -49,6 +57,7 @@ const ArtistsDetail = () => {
       enabled: !!id,
     }
   );
+
   const { data: artistTopItems } = useQuery<ArtistTopItem, Error>(
     ["AlbumArtist", artistId],
     () => getTopArtist(artistId!),
@@ -63,14 +72,14 @@ const ArtistsDetail = () => {
         message: "Success",
         description: "Đã fl nghệ sĩ",
       });
-      refetch()
+      refetch();
     },
     onError: () => {
       notification.error({
         message: "Error",
         description: ` Có lỗi xảy ra khi fl nghệ sĩ`,
       });
-      refetch()
+      refetch();
     },
   });
 
@@ -80,16 +89,14 @@ const ArtistsDetail = () => {
         message: "Success",
         description: "Đã unfl nghệ sĩ",
       });
-      refetch()
-
+      refetch();
     },
     onError: (error) => {
       notification.error({
         message: "Error",
         description: `Có lỗi xảy ra khi unfl nghệ sĩ`,
       });
-      refetch()
-
+      refetch();
     },
   });
 
@@ -139,6 +146,25 @@ const ArtistsDetail = () => {
     }
   };
 
+  const isInLibraryAlbum = (albumId: string) => {
+    return savedAlbumsData?.items.some((album) => album.album.id === albumId);
+  };
+
+  const artistIds = related?.artists.map((artist) => artist.id) || [];
+
+  const { data: followingStatus } = useQuery<boolean[], Error>(
+    ["followingStatus", artistIds],
+    () => checkMultipleArtistsFollowing(artistIds),
+    {
+      enabled: !!related?.artists.length,
+    }
+  );
+
+  const isInFollowing = (artistId: string) => {
+    const index = artistIds.indexOf(artistId);
+    return followingStatus?.[index];
+  };
+  
   const navigate = useNavigate();
 
   return (
@@ -184,7 +210,12 @@ const ArtistsDetail = () => {
         </div>
         <div>
           <Button
-            style={{color:"white", backgroundColor:"transparent", borderRadius: "9999px", marginTop: "20px"}}
+            style={{
+              color: "white",
+              backgroundColor: "transparent",
+              borderRadius: "9999px",
+              marginTop: "20px",
+            }}
             onClick={() => {
               if (isFollowing) {
                 unfollowArtistMutation.mutate(id!);
@@ -202,85 +233,98 @@ const ArtistsDetail = () => {
         <div className="top-item">
           <div className="top-item-container">
             {artistTopItems?.tracks?.slice(0, visibleItems).map((track) => (
-              <div className="top-item-songs" key={track.id}>
-                <div style={{ flexBasis: "50%" }}>
-                  <CardXL
-                    style={{
-                      backgroundColor: "transparent",
-                      padding: "10px",
-                    }}
-                    key={track.id}
-                    cover={
-                      track.album.images.length > 0 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <div className="top-item-stt">
-                            <p
-                              style={{
-                                color: "white",
-                                padding: "8px",
-                                fontSize: "19px",
-                                marginRight: "15px",
-                              }}
-                            >
-                              {artistTopItems.tracks.indexOf(track) + 1}
-                            </p>
-                          </div>
-                          <div className="top-item-img">
-                            <img
-                              src={track.album.images[0].url}
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                objectFit: "cover",
-                              }}
-                              alt={track.name}
-                            />
-                          </div>
-                        </div>
-                      ) : null
-                    }
-                    title={
-                      <p
-                        style={{
-                          color: "white",
-                          width: "500px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {track.name}
-                      </p>
-                    }
+              <Dropdown
+                key={track.id}
+                overlay={
+                  <DropdownAddSong
+                    trackUri={`spotify:track:${track.id}`}
+                    refetch={refetch}
                   />
-                </div>
-                <div className="top-item-album">
-                  <p onClick={() => navigate(`/album/${track.album.id}`)}>
-                    {track.album.name}
-                  </p>
-                </div>
-                <div className="top-item-duration">
-                  <div>
-                    <p
-                      style={{ color: "white", marginRight: "30px" }}
-                      className="icon-duration"
-                    >
-                      <PlusCircleOutlined />
+                }
+                trigger={["contextMenu"]}
+              >
+                <div className="top-item-songs" key={track.id}>
+                  <div style={{ flexBasis: "50%" }}>
+                    <CardXL
+                      style={{
+                        backgroundColor: "transparent",
+                        padding: "10px",
+                      }}
+                      key={track.id}
+                      cover={
+                        track.album.images.length > 0 ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <div className="top-item-stt">
+                              <p
+                                style={{
+                                  color: "white",
+                                  padding: "8px",
+                                  fontSize: "19px",
+                                  marginRight: "15px",
+                                }}
+                              >
+                                {artistTopItems.tracks.indexOf(track) + 1}
+                              </p>
+                            </div>
+                            <div className="top-item-img">
+                              <img
+                                src={track.album.images[0].url}
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                }}
+                                alt={track.name}
+                              />
+                            </div>
+                          </div>
+                        ) : null
+                      }
+                      title={
+                        <p
+                          style={{
+                            color: "white",
+                            width: "500px",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {track.name}
+                        </p>
+                      }
+                    />
+                  </div>
+                  <div className="top-item-album">
+                    <p onClick={() => navigate(`/album/${track.album.id}`)}>
+                      {track.album.name}
                     </p>
                   </div>
-                  <div>
-                    <p>{formatDuration(track.duration_ms)}</p>
-                  </div>
-                  <div>
-                    <p
-                      style={{ color: "white", marginLeft: "30px" }}
-                      className="icon-duration"
-                    >
-                      <SmallDashOutlined />
-                    </p>
+                  <div className="top-item-duration">
+                    <div>
+                      <p
+                        style={{ color: "white", marginRight: "30px" }}
+                        className="icon-duration"
+                      >
+                        <PlusCircleOutlined />
+                      </p>
+                    </div>
+                    <div>
+                      <p>{formatDuration(track.duration_ms)}</p>
+                    </div>
+                    <div>
+                      <p
+                        style={{ color: "white", marginLeft: "30px" }}
+                        className="icon-duration"
+                      >
+                        <SmallDashOutlined />
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Dropdown>
             ))}
             <p onClick={toggleItemsVisibility} style={{ color: "white" }}>
               {showAll ? "Show Less" : "Show More"}
@@ -333,6 +377,66 @@ const ArtistsDetail = () => {
               style={{ marginTop: "20px", marginLeft: "20px" }}
             >
               {albums?.items?.slice(0, 7).map((playlist) => (
+                <Dropdown
+                  key={playlist.id}
+                  overlay={
+                    <DropdownAlbum
+                      playlistId={[playlist.id]}
+                      isInLibrary={isInLibraryAlbum(playlist.id)}
+                      refetch={refetch}
+                    />
+                  }
+                  trigger={["contextMenu"]}
+                >
+                  <Card
+                    className="card-music-page"
+                    key={playlist.id}
+                    onClick={() => navigate(`/album/${playlist?.id}`)}
+                    cover={
+                      playlist.images && playlist.images.length > 0 ? (
+                        <img src={playlist.images[0].url} alt={playlist.name} />
+                      ) : null
+                    }
+                  >
+                    <Meta
+                      title={
+                        <span className="meta-title">{playlist.name}</span>
+                      }
+                      description={
+                        <span className="description">
+                          {playlist.release_date} ~~{" "}
+                          {albumType === "album" ? "Album" : "Single"}
+                        </span>
+                      }
+                    />
+                  </Card>
+                </Dropdown>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h1 style={{ color: "white", padding: "20px" }}>
+            {" "}
+            Có sự xuất hiện của {artistDetails?.name}
+          </h1>
+          <div
+            className="card-music-container"
+            style={{ marginTop: "20px", marginLeft: "20px" }}
+          >
+            {albumsAppear?.items?.slice(0, 7).map((playlist) => (
+              <Dropdown
+                key={playlist.id}
+                overlay={
+                  <DropdownAlbum
+                    playlistId={[playlist.id]}
+                    isInLibrary={isInLibraryAlbum(playlist.id)}
+                    refetch={refetch}
+                  />
+                }
+                trigger={["contextMenu"]}
+              >
                 <Card
                   className="card-music-page"
                   key={playlist.id}
@@ -353,41 +457,7 @@ const ArtistsDetail = () => {
                     }
                   />
                 </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <h1 style={{ color: "white", padding: "20px" }}>
-            {" "}
-            Có sự xuất hiện của {artistDetails?.name}
-          </h1>
-          <div
-            className="card-music-container"
-            style={{ marginTop: "20px", marginLeft: "20px" }}
-          >
-            {albumsAppear?.items?.slice(0, 7).map((playlist) => (
-              <Card
-                className="card-music-page"
-                key={playlist.id}
-                onClick={() => navigate(`/album/${playlist?.id}`)}
-                cover={
-                  playlist.images && playlist.images.length > 0 ? (
-                    <img src={playlist.images[0].url} alt={playlist.name} />
-                  ) : null
-                }
-              >
-                <Meta
-                  title={<span className="meta-title">{playlist.name}</span>}
-                  description={
-                    <span className="description">
-                      {playlist.release_date} ~~{" "}
-                      {albumType === "album" ? "Album" : "Single"}
-                    </span>
-                  }
-                />
-              </Card>
+              </Dropdown>
             ))}
           </div>
         </div>
@@ -398,31 +468,52 @@ const ArtistsDetail = () => {
             className="card-music-container"
             style={{ marginTop: "20px", marginLeft: "20px" }}
           >
-            {related?.artists?.slice(0, 7).map((playlist) => (
-              <Card
-                className="card-music-page"
-                key={playlist.id}
-                onClick={() => navigate(`/artists/${playlist?.id}`)}
-                cover={
-                  playlist.images && playlist.images.length > 0 ? (
-                    <img
-                      style={{ borderRadius: "50%" }}
-                      src={playlist.images[0].url}
-                      alt={playlist.name}
+            {related?.artists?.slice(0, 7).map((playlist) => {
+              console.log(
+                `Artist ID: ${playlist.id}, isInLibrary: ${isInFollowing(
+                  playlist.id
+                )}`
+              );
+              return (
+                <Dropdown
+                  key={playlist.id}
+                  overlay={
+                    <DropdownArtist
+                      playlistId={playlist.id}
+                      isInLibrary={isInFollowing(playlist.id)}
+                      refetch={refetch}
                     />
-                  ) : null
-                }
-              >
-                <Meta
-                  title={<span className="meta-title">{playlist.name}</span>}
-                  description={
-                    <span className="description">
-                      <p style={{ color: "white" }}>{playlist.type}</p>
-                    </span>
                   }
-                />
-              </Card>
-            ))}
+                  trigger={["contextMenu"]}
+                >
+                  <Card
+                    className="card-music-page"
+                    key={playlist.id}
+                    onClick={() => navigate(`/artists/${playlist?.id}`)}
+                    cover={
+                      playlist.images && playlist.images.length > 0 ? (
+                        <img
+                          style={{ borderRadius: "50%" }}
+                          src={playlist.images[0].url}
+                          alt={playlist.name}
+                        />
+                      ) : null
+                    }
+                  >
+                    <Meta
+                      title={
+                        <span className="meta-title">{playlist.name}</span>
+                      }
+                      description={
+                        <span className="description">
+                          <p style={{ color: "white" }}>{playlist.type}</p>
+                        </span>
+                      }
+                    />
+                  </Card>
+                </Dropdown>
+              );
+            })}
           </div>
         </div>
         <FooterComponent />
